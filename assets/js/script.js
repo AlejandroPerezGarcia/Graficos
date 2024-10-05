@@ -2,7 +2,6 @@ const apiURL = "https://mindicador.cl/api/";
 const tipoMoneda = document.querySelector("select");
 
 
-
 async function consumoApi() {
   const url = apiURL + tipoMoneda.value;
   let response = await fetch(`${url}`, {
@@ -39,26 +38,32 @@ function formateaData(data) {
   return { tituloGrafico, etiqueta, valores }
 }
 
-document.getElementById("cargarInfo").addEventListener("click", async () => {
-  const data = await consumoApi()
-  const { tituloGrafico, etiqueta, valores } = formateaData(data)
+let chart;
+window.onload = function () {
+  document.getElementById("cargarInfo").addEventListener("click", async () => {
 
+    const data = await consumoApi()
+    const { tituloGrafico, etiqueta, valores } = formateaData(data)
 
-  const ctx = document.getElementById('myChart');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: etiqueta,
-      datasets: [{
-        label: tituloGrafico,
-        data: valores,
-        borderColor: 'rgb( 55, 195, 60)',
-        tension: 0.0
-      }]
+    if (chart) {
+      chart.destroy();
     }
+
+    const ctx = document.getElementById('myChart');
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: etiqueta,
+        datasets: [{
+          label: tituloGrafico,
+          data: valores,
+          borderColor: 'rgb( 55, 195, 60)',
+          tension: 0.0
+        }]
+      }
+    })
   })
-  myLineChart.update();
-})
+}
 
 function formateaDataCanvasJS(data) {
   let tituloGrafico = data.nombre
